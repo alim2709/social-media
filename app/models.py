@@ -24,7 +24,7 @@ class Post(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     title: Mapped[str] = mapped_column(unique=True, nullable=False)
     content: Mapped[str] = mapped_column(unique=True, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now(timezone.utc), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now, nullable=False)
     is_blocked: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
@@ -38,7 +38,7 @@ class Comment(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     content: Mapped[str] = mapped_column(nullable=False)
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now(timezone.utc), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now, nullable=False)
     is_blocked: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
