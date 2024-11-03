@@ -1,8 +1,7 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel
-
-from app.models import Comment
 
 
 class SCommentModel(BaseModel):
@@ -12,6 +11,4 @@ class SCommentModel(BaseModel):
     is_blocked: bool
     author_id: int
     post_id: int
-    parent_id: int
-
-    replies: list["Comment"]
+    parent_id: Optional[int]
