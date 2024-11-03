@@ -1,10 +1,10 @@
 from sqlalchemy import select, insert, update, delete
 
 from app.database import async_session_maker
-from app.models import Post
+from app.models import Post, Comment
 
 
-class SocialMediaService:
+class PostService:
     session = async_session_maker()
 
     async def get_posts(self):
@@ -44,4 +44,3 @@ class SocialMediaService:
             query = delete(Post).where(Post.id == post_id)
             result = await session.execute(query)
             await session.commit()
-
