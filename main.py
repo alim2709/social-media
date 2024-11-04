@@ -5,7 +5,10 @@ from app.users.routers import auth_router
 from app.posts.routers import post_router
 from app.comments.routers import comment_router
 
-app = FastAPI()
+app = FastAPI(
+    title="Social Media API",
+    summary="API for managing users, posts and comments"
+)
 
 app.include_router(auth_router)
 app.include_router(post_router)
