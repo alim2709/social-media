@@ -7,21 +7,15 @@ from app.models import Comment
 class SocialMediaCommentService:
     session = async_session_maker()
 
-    async def get_comments(self):
+    async def get_comments(self, filter_data = None):
         async with self.session as session:
             query = select(Comment)
-            result = await session.execute(query)
-            return result.scalars().all()
+            if filter_data:
+                if filter_data.author_id:
+                    query = query.where(Comment.author_id == filter_data.author_id)
+                if filter_data.post_id:
+                    query = query.where(Comment.post_id == filter_data.post_id)
 
-    async def get_post_comments(self, post_id):
-        async with self.session as session:
-            query = select(Comment).where(Comment.post_id == post_id)
-            result = await session.execute(query)
-            return result.scalars().all()
-
-    async def get_author_comments(self, author_id):
-        async with self.session as session:
-            query = select(Comment).where(Comment.author_id == author_id)
             result = await session.execute(query)
             return result.scalars().all()
 
