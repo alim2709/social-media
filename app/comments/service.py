@@ -1,4 +1,6 @@
-from sqlalchemy import select, insert, update, delete
+from datetime import datetime
+
+from sqlalchemy import select, insert, update, delete, cast, Date, func, case
 
 from app.database import async_session_maker
 from app.models import Comment
@@ -50,3 +52,24 @@ class SocialMediaCommentService:
             query = delete(Comment).where(Comment.id == comment_id)
             await session.execute(query)
             await session.commit()
+
+    async def get_comments_daily_breakdown(self, date_from: str, date_to: str):
+        date_from_dt = datetime.strptime(date_from, "%Y-%m-%d")
+        date_to_dt = datetime.strptime(date_to, "%Y-%m-%d")
+
+        async with self.session as session:
+            query = (
+                select(
+                cast(Comment.created_at, Date).label("comment_date"),
+                func.count().label("total_comments"),
+                func.sum(case(
+                    (Comment.is_blocked == True, 1),
+                    else_=0)).label("blocked_comments")
+            )
+                .where(Comment.created_at.between(date_from_dt, date_to_dt))
+                .group_by(cast(Comment.created_at, Date))
+                .order_by("comment_date")
+            )
+
+            result = await session.execute(query)
+            return result.fetchall()
