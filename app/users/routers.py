@@ -1,14 +1,16 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from app.users.auth import get_password_hash, verify_password, create_access_token
 from app.config import settings
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.responses import JSONResponse
 from app.users.service import UserService
 from app.users.schemas import SUserCreateModel, SUserModel, SUserLoginModel
+from app.users.dependencies import RefreshTokenBearer
 
 auth_router = APIRouter()
 user_service = UserService()
+refresh_token_service = RefreshTokenBearer()
 
 
 @auth_router.post("/signup", response_model=SUserModel)
@@ -75,3 +77,31 @@ async def login_users(user_login_data: SUserLoginModel):
                 "message": "Invalid email or password",
             }
         )
+
+
+@auth_router.get("/refresh-token/")
+async def get_new_access_token(token_details:dict = Depends(refresh_token_service)):
+
+    expiry_timestamp = token_details["exp"]
+
+    if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
+        new_access_token = create_access_token(
+            user_data=token_details["user"]
+        )
+
+        refresh_token = create_access_token(
+            user_data=token_details["user"],
+            refresh=True,
+            expire=timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
+        )
+
+        return JSONResponse(
+            content = {
+                "access_token": new_access_token,
+                "refresh_token": refresh_token,
+            }
+        )
+    raise HTTPException(
+        status_code = status.HTTP_400_BAD_REQUEST,
+        detail = "Token invalid or expired"
+    )
