@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 
 from pydantic import BaseModel
@@ -36,3 +36,7 @@ class SCommentReplyUpdateModel(SCommentReplyCreateModel):
 class SCommentFilter(BaseModel):
     author_id: int | None = None
     post_id: int | None = None
+
+class SCommentDateFilter(BaseModel):
+    date_from: date
+    date_to: date
