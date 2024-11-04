@@ -35,7 +35,9 @@ async def get_post_by_id(post_id):
 @post_router.post("/posts/", response_model=SPostModel)
 async def create_post(post: SPostCreateModel, user_details = Depends(access_token_bearer)):
     post_data = post.model_dump()
-
+    exists_post = await post_service.get_post_by_title(post_data['title'])
+    if exists_post:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Post already exists")
     new_post = await post_service.create_post(author_id = int(user_details["user"]["id"]), **post_data)
     return SPostModel(
         id=new_post.id,
@@ -43,6 +45,7 @@ async def create_post(post: SPostCreateModel, user_details = Depends(access_toke
         content=new_post.content,
         created_at=new_post.created_at,
         is_blocked=new_post.is_blocked,
+        author_id=new_post.author_id,
     )
 
 
@@ -72,7 +75,7 @@ async def update_post(post_id: int, new_data: SPostUpdateModel, user_details = D
         is_blocked=new_post.is_blocked,
     )
 
-@post_router.delete("/posts/{post_id}", response_model=SPostModel)
+@post_router.delete("/posts/{post_id}")
 async def delete_post(post_id: int, user_details = Depends(access_token_bearer)):
     user_id = int(user_details["user"]["id"])
 
