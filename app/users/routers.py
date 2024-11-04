@@ -8,7 +8,7 @@ from app.users.service import UserService
 from app.users.schemas import SUserCreateModel, SUserModel, SUserLoginModel
 from app.users.dependencies import RefreshTokenBearer
 
-auth_router = APIRouter()
+auth_router = APIRouter(prefix="/api")
 user_service = UserService()
 refresh_token_service = RefreshTokenBearer()
 

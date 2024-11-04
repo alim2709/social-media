@@ -9,7 +9,7 @@ from app.comments.service import SocialMediaCommentService
 from app.posts.routers import post_service
 from app.users.dependencies import AccessTokenBearer
 
-comment_router = APIRouter()
+comment_router = APIRouter(prefix="/api")
 comment_service = SocialMediaCommentService()
 access_token_bearer = AccessTokenBearer()
 

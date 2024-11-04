@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from app.posts.schemas import SPostModel, SPostCreateModel, SPostUpdateModel
 from app.posts.service import PostService
 
-post_router = APIRouter()
+post_router = APIRouter(prefix="/api")
 post_service = PostService()
 access_token_bearer = AccessTokenBearer()
 
