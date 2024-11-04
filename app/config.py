@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     REFRESH_TOKEN_EXPIRE_DAYS: int
+    GOOGLE_AI_SECRET_KEY: str
 
 
     @property
