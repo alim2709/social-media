@@ -9,6 +9,7 @@ class SPostModel(BaseModel):
     content: str
     created_at: datetime
     is_blocked: bool
+    author_id: int
 
 
 class SPostCreateModel(BaseModel):
