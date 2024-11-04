@@ -1,7 +1,7 @@
 from sqlalchemy import select, insert, update, delete
 
 from app.database import async_session_maker
-from app.models import Post, Comment
+from app.models import Post
 
 
 class PostService:
@@ -18,6 +18,12 @@ class PostService:
             query = select(Post).where(Post.id == post_id)
             result = await session.execute(query)
 
+            return result.scalar_one_or_none()
+
+    async def get_post_by_title(self, title: str):
+        async with self.session as session:
+            query = select(Post).where(Post.title == title)
+            result = await session.execute(query)
             return result.scalar_one_or_none()
 
     async def create_post(self, **post_data):
