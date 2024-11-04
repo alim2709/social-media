@@ -4,7 +4,13 @@ from fastapi import APIRouter, status, HTTPException
 from fastapi.params import Depends
 from fastapi.responses import JSONResponse
 
-from app.comments.schemas import SCommentModel, SCommentFilter, SCommentCreateModel, SCommentUpdateModel
+from app.comments.schemas import (
+    SCommentModel,
+    SCommentFilter,
+    SCommentCreateModel,
+    SCommentUpdateModel,
+    SCommentDateFilter
+)
 from app.comments.service import SocialMediaCommentService
 from app.posts.routers import post_service
 from app.users.dependencies import AccessTokenBearer
@@ -75,3 +81,21 @@ async def delete_comment(comment_id: int, user_details = Depends(access_token_be
         status_code=status.HTTP_204_NO_CONTENT,
         content={"message": "Comment deleted"}
     )
+
+
+@comment_router.get("/comments/daily-breakdown")
+async def get_daily_breakdown(filter_data: SCommentDateFilter = Depends()):
+
+    result = await comment_service.get_comments_daily_breakdown(
+        filter_data.date_from.isoformat(),
+        filter_data.date_to.isoformat()
+    )
+    formatted_result = [
+        {
+            "comment_date": row.comment_date,
+            "total_comments": row.total_comments,
+            "blocked_comments": row.blocked_comments
+        }
+        for row in result
+    ]
+    return formatted_result
