@@ -36,6 +36,7 @@ class SCommentReplyUpdateModel(SCommentReplyCreateModel):
 class SCommentFilter(BaseModel):
     author_id: int | None = None
     post_id: int | None = None
+    is_blocked: bool | None = None
 
 class SCommentDateFilter(BaseModel):
     date_from: date
