@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi.params import Depends
-
+from app.utils import moderation_ai_posts_comments
 from app.users.dependencies import AccessTokenBearer
 from fastapi import APIRouter, status, HTTPException
 from fastapi.responses import JSONResponse
@@ -34,11 +34,21 @@ async def get_post_by_id(post_id):
 
 @post_router.post("/posts/", response_model=SPostModel)
 async def create_post(post: SPostCreateModel, user_details = Depends(access_token_bearer)):
-    post_data = post.model_dump()
-    exists_post = await post_service.get_post_by_title(post_data['title'])
+    post_data_dict = post.model_dump()
+    author_id = int(user_details["user"]["id"])
+    exists_post = await post_service.get_post_by_title(post_data_dict['title'])
+
     if exists_post:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Post already exists")
-    new_post = await post_service.create_post(author_id = int(user_details["user"]["id"]), **post_data)
+
+    check_title_post = moderation_ai_posts_comments(post_data_dict['title'])
+    check_content_post = moderation_ai_posts_comments(post_data_dict['content'])
+
+    if check_title_post == "SAFETY" or check_content_post == "SAFETY":
+        await post_service.create_post(author_id=author_id, is_blocked=True, **post_data_dict)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Post has been blocked for safety reasons")
+
+    new_post = await post_service.create_post(author_id = author_id, **post_data_dict)
     return SPostModel(
         id=new_post.id,
         title=new_post.title,
