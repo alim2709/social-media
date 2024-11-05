@@ -19,3 +19,6 @@ class SPostCreateModel(BaseModel):
 class SPostUpdateModel(BaseModel):
     title: str
     content: str
+
+class SPostFilter(BaseModel):
+    is_blocked: bool | None = None
