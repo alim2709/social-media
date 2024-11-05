@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 
+
 class SUserCreateModel(BaseModel):
     username: str = Field(max_length=20)
     email: EmailStr = Field(max_length=50)
@@ -16,11 +17,6 @@ class SUserModel(BaseModel):
     auto_reply_enabled: bool
     auto_reply_delay: int
 
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-
-class TokenData(BaseModel):
-    username: str | None = None
+class SUserEnableAutoReplyModel(BaseModel):
+    auto_reply_enabled: bool
+    auto_reply_delay: int | None = None
