@@ -9,7 +9,8 @@ from app.comments.schemas import (
     SCommentFilter,
     SCommentCreateModel,
     SCommentUpdateModel,
-    SCommentDateFilter
+    SCommentDateFilter,
+    SCommentDetailModel
 )
 from app.comments.service import SocialMediaCommentService
 from app.posts.routers import post_service
@@ -27,6 +28,14 @@ async def get_comments(filter_data: SCommentFilter = Depends()):
     if not comments:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "There are no comments yet"})
     return comments
+
+@comment_router.get("/comments/{comment_id}", response_model=SCommentDetailModel)
+async def get_comment_by_id(comment_id):
+    int_comment_id = int(comment_id)
+    comment = await comment_service.get_comment_by_id(int_comment_id)
+    if not comment or comment.is_blocked:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found or blocked")
+    return comment
 
 @comment_router.post("/comments/", response_model=SCommentModel)
 async def create_comment(comment_data: SCommentCreateModel, user_details = Depends(access_token_bearer)):
