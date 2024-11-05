@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import select, insert, update, delete, cast, Date, func, case
+from sqlalchemy import select, insert, update, delete, cast, Date, func, case, or_
+from sqlalchemy.orm import joinedload
 
 from app.database import async_session_maker
 from app.models import Comment
@@ -26,9 +27,29 @@ class SocialMediaCommentService:
 
     async def get_comment_by_id(self, comment_id):
         async with self.session() as session:
-            query = select(Comment).where(Comment.id == comment_id)
+
+            query = (
+                select(Comment)
+                .options(joinedload(Comment.replies))
+                .where(or_(Comment.id == comment_id,Comment.parent_id == comment_id))
+                .order_by(Comment.created_at)
+            )
             result = await session.execute(query)
-            return result.scalar_one_or_none()
+            comments = result.unique().scalars().all()
+
+            comment_dict = {comment.id: comment for comment in comments}
+
+            root_comment = comment_dict.get(comment_id)
+            if not root_comment:
+                return None
+
+            for comment in comments:
+                if comment.parent_id:
+                    parent_comment = comment_dict.get(comment.parent_id)
+                    if parent_comment:
+                        parent_comment.replies.append(comment)
+
+            return root_comment
 
 
     async def create_comment(self, **comment_data):
