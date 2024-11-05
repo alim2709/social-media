@@ -5,7 +5,7 @@ from app.config import settings
 from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.responses import JSONResponse
 from app.users.service import UserService
-from app.users.schemas import SUserCreateModel, SUserModel, SUserLoginModel
+from app.users.schemas import SUserCreateModel, SUserModel, SUserLoginModel, SUserEnableAutoReplyModel
 from app.users.dependencies import RefreshTokenBearer
 
 auth_router = APIRouter(prefix="/api")
@@ -105,3 +105,7 @@ async def get_new_access_token(token_details:dict = Depends(refresh_token_servic
         status_code = status.HTTP_400_BAD_REQUEST,
         detail = "Token invalid or expired"
     )
+
+@auth_router.post("/user/{user_id}/enable_auto_reply")
+async def enable_auto_reply(user_id, user_data: SUserEnableAutoReplyModel = Depends()):
+    pass
