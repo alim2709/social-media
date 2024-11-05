@@ -1,7 +1,7 @@
 from datetime import datetime, date
-from typing import Optional
+from typing import Optional, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class SCommentModel(BaseModel):
@@ -13,6 +13,14 @@ class SCommentModel(BaseModel):
     post_id: int
     parent_id: Optional[int]
 
+class SCommentPostDetailModel(BaseModel):
+    id: int
+    content: str
+    created_at: datetime
+    is_blocked: bool
+    author_id: int
+
+    model_config = ConfigDict(from_attributes=True)
 
 class SCommentCreateModel(BaseModel):
     content: str
@@ -41,3 +49,19 @@ class SCommentFilter(BaseModel):
 class SCommentDateFilter(BaseModel):
     date_from: date
     date_to: date
+
+
+class SCommentDetailModel(BaseModel):
+    id: int
+    content: str
+    created_at: datetime
+    is_blocked: bool
+    author_id: int
+    post_id: int
+    parent_id: Optional[int]
+    replies: List["SCommentModel"] = []
+
+
+    model_config = ConfigDict(from_attributes=True)
+
+SCommentDetailModel.model_rebuild()
