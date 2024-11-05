@@ -4,10 +4,11 @@ from app.models import User
 
 
 class UserService:
-    session = async_session_maker()
+    def __init__(self, session=async_session_maker):
+        self.session = session
 
     async def get_user_by_email(self, email: str) -> User:
-        async with self.session as session:
+        async with self.session() as session:
             query = select(User).where(User.email == email)
             result = await session.execute(query)
 
@@ -19,7 +20,7 @@ class UserService:
         return bool(user)
 
     async def create_user(self, **user_data) -> None:
-        async with self.session as session:
+        async with self.session() as session:
             query = insert(User).values(**user_data).returning(User)
             result = await session.execute(query)
             await session.commit()
