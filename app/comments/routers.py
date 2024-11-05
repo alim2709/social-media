@@ -14,6 +14,7 @@ from app.comments.schemas import (
 from app.comments.service import SocialMediaCommentService
 from app.posts.routers import post_service
 from app.users.dependencies import AccessTokenBearer
+from app.utils import moderation_ai_posts_comments
 
 comment_router = APIRouter(prefix="/api")
 comment_service = SocialMediaCommentService()
@@ -32,8 +33,14 @@ async def create_comment(comment_data: SCommentCreateModel, user_details = Depen
     comment_data_dict = comment_data.model_dump()
     author_id = int(user_details["user"]["id"])
     post = await post_service.get_post_by_id(post_id=int(comment_data_dict["post_id"]))
-    if not post:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+
+    if not post or post.is_blocked:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found or it is blocked")
+    check_comment = moderation_ai_posts_comments(comment_data_dict["content"])
+
+    if check_comment == "SAFETY":
+        await comment_service.create_comment(author_id=author_id, is_blocked=True, **comment_data_dict)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Comment has been blocked for safety reasons")
 
     new_comment = await comment_service.create_comment(author_id = author_id, **comment_data_dict)
 
