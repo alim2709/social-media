@@ -17,6 +17,8 @@ class SocialMediaCommentService:
                     query = query.where(Comment.author_id == filter_data.author_id)
                 if filter_data.post_id:
                     query = query.where(Comment.post_id == filter_data.post_id)
+                if filter_data.is_blocked or not filter_data.is_blocked:
+                    query = query.where(Comment.is_blocked == filter_data.is_blocked)
 
             result = await session.execute(query)
             return result.scalars().all()
