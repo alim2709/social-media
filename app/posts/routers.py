@@ -7,7 +7,7 @@ from fastapi import APIRouter, status, HTTPException
 from fastapi.responses import JSONResponse
 
 
-from app.posts.schemas import SPostModel, SPostCreateModel, SPostUpdateModel
+from app.posts.schemas import SPostModel, SPostCreateModel, SPostUpdateModel, SPostFilter
 from app.posts.service import PostService
 
 post_router = APIRouter(prefix="/api")
@@ -15,8 +15,8 @@ post_service = PostService()
 access_token_bearer = AccessTokenBearer()
 
 @post_router.get("/posts/", response_model=List[SPostModel])
-async def get_posts():
-    posts = await post_service.get_posts()
+async def get_posts(filter_data: SPostFilter = Depends()):
+    posts = await post_service.get_posts(filter_data)
     if not posts:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "There are no posts yet"})
     return posts
