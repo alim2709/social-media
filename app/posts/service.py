@@ -1,7 +1,8 @@
-from sqlalchemy import select, insert, update, delete
+from sqlalchemy import select, insert, update, delete, and_
+from sqlalchemy.orm import joinedload, selectinload
 
 from app.database import async_session_maker
-from app.models import Post
+from app.models import Post, Comment
 
 
 class PostService:
@@ -11,17 +12,26 @@ class PostService:
     async def get_posts(self, filter_data = None):
         async with self.session() as session:
             query = select(Post)
-            if filter_data.is_blocked or not filter_data.is_blocked:
+            if filter_data.is_blocked == True or filter_data.is_blocked == False:
                 query = query.where(Post.is_blocked == filter_data.is_blocked)
             result = await session.execute(query)
             return result.scalars().all()
 
     async def get_post_by_id(self, post_id):
         async with self.session() as session:
-            query = select(Post).where(Post.id == post_id)
+            query = (
+                select(Post)
+                .options(joinedload(Post.comments))
+                .where(Post.id == post_id)
+            )
             result = await session.execute(query)
 
-            return result.scalar_one_or_none()
+            post = result.unique().scalar_one_or_none()
+
+            if post:
+                post.comments = [comment for comment in post.comments if not comment.is_blocked]
+
+            return post
 
     async def get_post_by_title(self, title: str):
         async with self.session() as session:
