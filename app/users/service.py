@@ -35,6 +35,8 @@ class UserService:
 
     async def update_user(self, user_id: int, **user_data) -> None:
         async with self.session() as session:
+            if user_data.get("auto_reply_delay") is None:
+                user_data.pop("auto_reply_delay")
             query = update(User).values(**user_data).where(User.id == user_id)
             result = await session.execute(query)
             await session.commit()
