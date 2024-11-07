@@ -23,7 +23,7 @@ def moderation_ai_posts_comments(text_to_analyze: str) -> str:
 
     return response.candidates[0].finish_reason.name
 
-def automatic_reply(post_content: str, comment_content_to_reply: str) -> str:
+def get_automatic_reply_content(post_content: str, comment_content_to_reply: str) -> str:
     model = genai.GenerativeModel("gemini-1.5-flash")
     prompt_data = f"""
     You are an assistant designed to generate thoughtful and relevant replies to comments on social media posts. Based on the context provided, craft a response that aligns with the tone and content of the original post.
