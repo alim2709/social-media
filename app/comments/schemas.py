@@ -13,6 +13,8 @@ class SCommentModel(BaseModel):
     post_id: int
     parent_id: Optional[int]
 
+    model_config = ConfigDict(from_attributes=True)
+
 class SCommentPostDetailModel(BaseModel):
     id: int
     content: str
