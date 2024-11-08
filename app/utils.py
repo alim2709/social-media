@@ -50,4 +50,4 @@ def get_automatic_reply_content(post_content: str, comment_content_to_reply: str
         },
     )
 
-    return response.text
+    return response.text.strip()
