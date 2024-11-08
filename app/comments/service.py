@@ -9,7 +9,7 @@ from app.models import Comment
 
 class SocialMediaCommentService:
     def __init__(self, session=async_session_maker):
-        self.session= session
+        self.session = session
 
     async def get_comments(self, filter_data = None):
         async with self.session() as session:
@@ -19,11 +19,14 @@ class SocialMediaCommentService:
                     query = query.where(Comment.author_id == filter_data.author_id)
                 if filter_data.post_id:
                     query = query.where(Comment.post_id == filter_data.post_id)
-                if filter_data.is_blocked or not filter_data.is_blocked:
+                if filter_data.is_blocked is not None:
                     query = query.where(Comment.is_blocked == filter_data.is_blocked)
 
             result = await session.execute(query)
-            return result.scalars().all()
+            result_full = result.scalars().all()
+
+            return result_full
+
 
     async def get_comment_by_id(self, comment_id):
         async with self.session() as session:
@@ -46,7 +49,7 @@ class SocialMediaCommentService:
             for comment in comments:
                 if comment.parent_id:
                     parent_comment = comment_dict.get(comment.parent_id)
-                    if parent_comment:
+                    if parent_comment and comment not in parent_comment.replies:
                         parent_comment.replies.append(comment)
 
             return root_comment
