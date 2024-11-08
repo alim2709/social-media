@@ -42,7 +42,11 @@ async def get_comment_by_id(comment_id):
     return comment
 
 @comment_router.post("/comments/", response_model=SCommentModel)
-async def create_comment(background_tasks: BackgroundTasks, comment_data: SCommentCreateModel, user_details = Depends(access_token_bearer)):
+async def create_comment(
+        background_tasks: BackgroundTasks,
+        comment_data: SCommentCreateModel,
+        user_details = Depends(access_token_bearer)
+):
     comment_data_dict = comment_data.model_dump()
     author_id = int(user_details["user"]["id"])
     post = await post_service.get_post_by_id(post_id=int(comment_data_dict["post_id"]))
@@ -72,6 +76,7 @@ async def create_comment(background_tasks: BackgroundTasks, comment_data: SComme
         )
 
     return new_comment
+
 @comment_router.put("/comments/{comment_id}", response_model=SCommentModel)
 async def update_comment(
         comment_id: int,

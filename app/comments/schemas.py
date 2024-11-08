@@ -66,4 +66,5 @@ class SCommentDetailModel(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 SCommentDetailModel.model_rebuild()

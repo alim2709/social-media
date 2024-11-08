@@ -120,5 +120,3 @@ async def enable_auto_reply(
     updated_user = await user_service.update_user(user_id=int(user_id), **user_data_to_update_dict)
 
     return updated_user
-
-
