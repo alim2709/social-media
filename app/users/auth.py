@@ -2,7 +2,6 @@ import logging
 import jwt
 from app.config import settings
 from datetime import timedelta, datetime, timezone
-from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 
 
