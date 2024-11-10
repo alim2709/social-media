@@ -93,7 +93,7 @@ class SocialMediaCommentService:
                     (Comment.is_blocked == True, 1),
                     else_=0)).label("blocked_comments")
             )
-                .where(Comment.created_at.between(date_from_dt, date_to_dt))
+                .where(Comment.created_at >= date_from_dt, Comment.created_at <= date_to_dt)
                 .group_by(cast(Comment.created_at, Date))
                 .order_by("comment_date")
             )
