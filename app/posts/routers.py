@@ -84,6 +84,7 @@ async def update_post(post_id: int, new_data: SPostUpdateModel, user_details = D
         content=new_post.content,
         created_at=new_post.created_at,
         is_blocked=new_post.is_blocked,
+        author_id=new_post.author_id,
     )
 
 @post_router.delete("/posts/{post_id}")
