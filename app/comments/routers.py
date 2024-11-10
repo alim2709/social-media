@@ -129,6 +129,7 @@ async def get_daily_breakdown(filter_data: SCommentDateFilter = Depends()):
         filter_data.date_from.isoformat(),
         filter_data.date_to.isoformat()
     )
+
     formatted_result = [
         {
             "comment_date": row.comment_date,
@@ -137,4 +138,7 @@ async def get_daily_breakdown(filter_data: SCommentDateFilter = Depends()):
         }
         for row in result
     ]
+
+    if not formatted_result:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "No comments for this date"})
     return formatted_result
