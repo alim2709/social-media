@@ -70,6 +70,7 @@ This project is a social media web application built with **FastAPI** for the ba
       ```
       docker cp ./data/db_backup.sql db:/tmp/db_backup.sql
       ```
+   
    Run the restore command:
       ```
       docker exec -i db psql -U postgres -d db -f /tmp/db_backup.sql
