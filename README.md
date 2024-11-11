@@ -59,28 +59,28 @@ This project is a social media web application built with **FastAPI** for the ba
     ```
    docker compose ps 
     ```
-3 **Two options:**
-   - **Option 1 Run migrations:**
-      ```
-      docker compose exec social-media-app alembic upgrade head
-      ```
-   - **Option 2 Run db_backup file:**
+3. **Two options:**
+- **Option 1 Run migrations:**
+   ```
+   docker compose exec social-media-app alembic upgrade head
+   ```
+- **Option 2 Run db_backup file:**
 
-   Copy the dump file:
-      ```
-      docker cp ./data/db_backup.sql db:/tmp/db_backup.sql
-      ```
+  Copy the dump file:
+     ```
+     docker cp ./data/db_backup.sql db:/tmp/db_backup.sql
+     ```
    
-   Run the restore command:
-      ```
-      docker exec -i db psql -U postgres -d db -f /tmp/db_backup.sql
-      ```
+  Run the restore command:
+     ```
+     docker exec -i db psql -U postgres -d db -f /tmp/db_backup.sql
+     ```
 
-   Testing APIs with test_user:
-   ```
-   email: test@test.com
-   password: testtesttest
-   ```
+  Testing APIs with test_user:
+  ```
+  email: test@test.com
+  password: testtesttest
+  ```
   
 4. **Access the application:**
    
