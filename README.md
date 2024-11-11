@@ -1,14 +1,21 @@
 # Social Media App
 
-This project is a social media web application built with FastAPI, using PostgreSQL as the database and Docker for containerization. The app includes user authentication, post publishing, post comments, and auto-reply features for comments.
+This project is a social media web application built with **FastAPI** for the backend, **PostgreSQL** as the database, and **Docker** for containerization. It leverages **SQLAlchemy** for ORM (Object-Relational Mapping) to manage database interactions and **Pydantic** for data validation and serialization.
 
 ## Table of Contents
 
+- [Features](#features)
 - [Requirements](#requirements)
 - [Environment Setup](#environment-setup)
 - [Running the Project](#running-the-project)
 - [Running Tests](#running-tests)
-- [Clearing the Database](#clearing-the-database)
+
+## Features
+- **User Authentication**: Secure registration and login functionality.
+- **Post Publishing**: Users can create, edit, and delete posts.
+- **Post Comments**: Users can comment on posts, with support for nested replies.
+- **Auto-Reply**: Automatic reply feature for comments, powered by a generative AI model to provide thoughtful responses based on the content of the post and comment.
+
 
 ## Requirements
 
@@ -57,7 +64,18 @@ This project is a social media web application built with FastAPI, using Postgre
    ```
    docker compose exec social-media-app alembic upgrade head
    ```
-4. **Access the application:**
+4. **Run db_backup file:**
+
+      Copy the dump file:
+   ```
+   docker cp ./data/db_backup.sql db:/tmp/db_backup.sql
+   ```
+      Run the restore command:
+   ```
+   docker exec -i db psql -U postgres -d db -f /tmp/db_backup.sql
+   ```
+
+5. **Access the application:**
    
    The app should now be available at http://localhost:7777.
 
